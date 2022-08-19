@@ -3,11 +3,11 @@ on:
   pull_request:
   push:
     branches:
-      - main
-      - 'releases/*'
+      - mains
+      - "releases/*"
   workflow_dispatch:
   schedule:
-    - cron: '40 0 * * *'
+    - cron: "40 0 * * *"
 
 jobs:
   test-linux:
@@ -39,27 +39,26 @@ jobs:
 
     runs-on: ${{ matrix.os }}
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@v2
-      with:
-        node-version: 14
-    - uses: ./
-    - name: Install dependencies
-      run: cd sample && npm install playwright@${{ matrix.playwright }}
-      # Headless running is the same across OSes
-    - name: Run Playwright (headless)
-      if: ${{ matrix.headless == true }}
-      run: cd sample && node index.js
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 14
+      - uses: ./
+      - name: Install dependencies
+        run: cd sample && npm install playwright@${{ matrix.playwright }}
+        # Headless running is the same across OSes
+      - name: Run Playwright (headless)
+        if: ${{ matrix.headless == true }}
+        run: cd sample && node index.js
 
-      # Headful is different in every OS
-    - name: Run Playwright (headful linux)
-      if: ${{ matrix.headless == false && startsWith(matrix.os, 'ubuntu') }}
-      run: cd sample && HEADFUL=true xvfb-run --auto-servernum -- node index.js
-    - name: Run Playwright (headful windows)
-      if: ${{ matrix.headless == false && startsWith(matrix.os, 'windows') }}
-      run: cd sample && HEADFUL=true node index.js
-      shell: bash
-    - name: Run Playwright (headful mac)
-      if: ${{ matrix.headless == false && startsWith(matrix.os, 'mac') }}
-      run: cd sample && HEADFUL=true node index.js
-
+        # Headful is different in every OS
+      - name: Run Playwright (headful linux)
+        if: ${{ matrix.headless == false && startsWith(matrix.os, 'ubuntu') }}
+        run: cd sample && HEADFUL=true xvfb-run --auto-servernum -- node index.js
+      - name: Run Playwright (headful windows)
+        if: ${{ matrix.headless == false && startsWith(matrix.os, 'windows') }}
+        run: cd sample && HEADFUL=true node index.js
+        shell: bash
+      - name: Run Playwright (headful mac)
+        if: ${{ matrix.headless == false && startsWith(matrix.os, 'mac') }}
+        run: cd sample && HEADFUL=true node index.js
